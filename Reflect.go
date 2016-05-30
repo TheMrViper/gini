@@ -2,7 +2,6 @@ package gini
 
 import (
 	"errors"
-	"fmt"
 	"reflect"
 	"strconv"
 )
@@ -29,7 +28,6 @@ func ReadConfig(name string, i interface{}) error {
 	}
 	resultMap := fileToMap(resultLines)
 
-	fmt.Println(resultMap)
 	rv := reflect.ValueOf(i)
 	if rv.Kind() != reflect.Ptr {
 		return errors.New("Interface is not ptr")
