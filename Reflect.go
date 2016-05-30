@@ -37,6 +37,9 @@ func mapToStruct(name string, data map[string]map[string]string, value reflect.V
 		typeField := value.Type().Field(f)
 
 		fieldName := typeField.Tag.Get("ini")
+		if fieldName == "-" {
+			continue
+		}
 		if fieldName == "" {
 			fieldName = typeField.Name
 		}
@@ -119,6 +122,9 @@ func structToMap(name string, data map[string]map[string]string, value reflect.V
 		typeField := value.Type().Field(f)
 
 		fieldName := typeField.Tag.Get("ini")
+		if fieldName == "-" {
+			continue
+		}
 		if fieldName == "" {
 			fieldName = typeField.Name
 		}
