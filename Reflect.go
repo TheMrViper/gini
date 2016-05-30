@@ -1,10 +1,26 @@
 package gini
 
 import (
+	"errors"
+	"fmt"
 	"reflect"
 	"strconv"
 )
 
+func WriteConfig(name string, i interface{}) error {
+	resultMap := make(map[string]map[string]string)
+
+	rv := reflect.ValueOf(i)
+	if rv.Kind() != reflect.Ptr {
+		return errors.New("Interface is not ptr")
+	}
+
+	structToMap("", resultMap, rv.Elem())
+
+	resultLines := mapToFile(resultMap)
+
+	return writeLines(resultLines, name)
+}
 func ReadConfig(name string, i interface{}) error {
 
 	resultLines, err := readLines(name)
@@ -13,28 +29,26 @@ func ReadConfig(name string, i interface{}) error {
 	}
 	resultMap := fileToMap(resultLines)
 
-	mapToStruct("", resultMap, reflect.ValueOf(i).Elem())
+	fmt.Println(resultMap)
+	rv := reflect.ValueOf(i)
+	if rv.Kind() != reflect.Ptr {
+		return errors.New("Interface is not ptr")
+	}
+
+	mapToStruct("", resultMap, rv.Elem())
 
 	return nil
 }
 
-func WriteConfig(name string, i interface{}) error {
-	resultMap := make(map[string]map[string]string)
-
-	structToMap("", resultMap, reflect.ValueOf(i).Elem())
-
-	resultLines := mapToFile(resultMap)
-
-	return writeLines(resultLines, name)
-}
-func mapToStruct(name string, data map[string]map[string]string, value reflect.Value) {
+func mapToStruct(name string, data map[string]map[string]string, structElem reflect.Value) {
 	if name != "" && data[name] == nil {
 		return
 	}
+	typeStruct := structElem.Type()
 
-	for f := 0; f < value.NumField(); f++ {
-		valueField := value.Field(f)
-		typeField := value.Type().Field(f)
+	for f := 0; f < typeStruct.NumField(); f++ {
+		valueField := structElem.Field(f)
+		typeField := typeStruct.Field(f)
 
 		fieldName := typeField.Tag.Get("ini")
 		if fieldName == "-" {
@@ -44,14 +58,17 @@ func mapToStruct(name string, data map[string]map[string]string, value reflect.V
 			fieldName = typeField.Name
 		}
 
+		if valueField.Kind() == reflect.Struct {
+			mapToStruct(fieldName, data, valueField)
+			continue
+		}
+
 		fieldValue, ok := data[name][fieldName]
 		if !ok {
 			continue
 		}
 
 		switch valueField.Kind() {
-		case reflect.Struct:
-			mapToStruct(fieldName, data, valueField)
 		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 			number, err := strconv.ParseInt(fieldValue, 10, 64)
 			if err != nil {
@@ -92,14 +109,15 @@ func mapToStruct(name string, data map[string]map[string]string, value reflect.V
 	}
 }
 
-func structToMap(name string, data map[string]map[string]string, value reflect.Value) {
+func structToMap(name string, data map[string]map[string]string, structElem reflect.Value) {
 	if name != "" && data[name] == nil {
 		data[name] = make(map[string]string)
 	}
+	typeStruct := structElem.Type()
 
-	for f := 0; f < value.NumField(); f++ {
-		valueField := value.Field(f)
-		typeField := value.Type().Field(f)
+	for f := 0; f < typeStruct.NumField(); f++ {
+		valueField := structElem.Field(f)
+		typeField := typeStruct.Field(f)
 
 		fieldName := typeField.Tag.Get("ini")
 		if fieldName == "-" {
