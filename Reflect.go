@@ -44,15 +44,15 @@ func mapToStruct(name string, data map[string]map[string]string, value reflect.V
 			fieldName = typeField.Name
 		}
 
+		fieldValue, ok := data[name][fieldName]
+		if !ok {
+			continue
+		}
+
 		switch valueField.Kind() {
 		case reflect.Struct:
 			mapToStruct(fieldName, data, valueField)
 		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-			fieldValue, ok := data[name][fieldName]
-			if !ok {
-				continue
-			}
-
 			number, err := strconv.ParseInt(fieldValue, 10, 64)
 			if err != nil {
 				continue
@@ -62,11 +62,6 @@ func mapToStruct(name string, data map[string]map[string]string, value reflect.V
 				valueField.SetInt(number)
 			}
 		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-			fieldValue, ok := data[name][fieldName]
-			if !ok {
-				continue
-			}
-
 			number, err := strconv.ParseUint(fieldValue, 10, 64)
 			if err != nil {
 				continue
@@ -76,11 +71,6 @@ func mapToStruct(name string, data map[string]map[string]string, value reflect.V
 				valueField.SetUint(number)
 			}
 		case reflect.Float32, reflect.Float64:
-			fieldValue, ok := data[name][fieldName]
-			if !ok {
-				continue
-			}
-
 			number, err := strconv.ParseFloat(fieldValue, 64)
 			if err != nil {
 				continue
@@ -90,18 +80,8 @@ func mapToStruct(name string, data map[string]map[string]string, value reflect.V
 				valueField.SetFloat(number)
 			}
 		case reflect.String:
-			fieldValue, ok := data[name][fieldName]
-			if !ok {
-				continue
-			}
-
 			valueField.SetString(fieldValue)
 		case reflect.Bool:
-			fieldValue, ok := data[name][fieldName]
-			if !ok {
-				continue
-			}
-
 			boolean, err := strconv.ParseBool(fieldValue)
 			if err != nil {
 				continue
