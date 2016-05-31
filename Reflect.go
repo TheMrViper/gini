@@ -39,9 +39,7 @@ func ReadConfig(name string, i interface{}) error {
 }
 
 func mapToStruct(name string, data map[string]map[string]string, structElem reflect.Value) {
-	if name != "" && data[name] == nil {
-		return
-	}
+
 	typeStruct := structElem.Type()
 
 	for f := 0; f < typeStruct.NumField(); f++ {
@@ -61,7 +59,11 @@ func mapToStruct(name string, data map[string]map[string]string, structElem refl
 			continue
 		}
 
-		fieldValue, ok := data[name][fieldName]
+		section, ok := data[name]
+		if !ok {
+			continue
+		}
+		fieldValue, ok := section[fieldName]
 		if !ok {
 			continue
 		}
