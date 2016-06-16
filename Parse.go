@@ -23,6 +23,9 @@ func parseFields(data []string, i *int) map[string]string {
 		if len(data[*i]) <= 0 {
 			continue
 		}
+		if data[*i][0] == '\n' || data[*i][0] == '\t' || data[*i][0] == '#' || data[*i][0] == ';' {
+			continue
+		}
 		if data[*i][0] == '[' {
 			*i -= 1
 			return result
@@ -71,11 +74,16 @@ func getFieldValue(data string) string {
 
 func mapToFile(data map[string]map[string]string) []string {
 	result := make([]string, 0)
-	for i := range data {
-		result = append(result, fmt.Sprintf("[%s]", i))
-		for j := range data[i] {
-			result = append(result, fmt.Sprintf("%s\t=\t%s", j, data[i][j]))
+	for section := range data {
+		if len(section) == 0 {
+			continue
 		}
+		result = append(result, fmt.Sprintf("[%s]", section))
+		for sectionField := range data[section] {
+			result = append(result, fmt.Sprintf("%s\t=\t%s", sectionField, data[section][sectionField]))
+		}
+
+		result = append(result, "\n")
 	}
 	return result
 }

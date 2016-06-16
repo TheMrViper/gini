@@ -2,6 +2,7 @@ package gini
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 	"strconv"
 )
@@ -13,8 +14,7 @@ func WriteConfig(name string, i interface{}) error {
 	if rv.Kind() != reflect.Ptr {
 		return errors.New("Interface is not ptr")
 	}
-
-	structToMap("", resultMap, rv.Elem())
+	structToMap(rv.Elem().Type().Name(), resultMap, rv.Elem())
 
 	resultLines := mapToFile(resultMap)
 
@@ -33,7 +33,7 @@ func ReadConfig(name string, i interface{}) error {
 		return errors.New("Interface is not ptr")
 	}
 
-	mapToStruct("", resultMap, rv.Elem())
+	mapToStruct(rv.Elem().Type().Name(), resultMap, rv.Elem())
 
 	return nil
 }
@@ -110,6 +110,7 @@ func mapToStruct(name string, data map[string]map[string]string, structElem refl
 }
 
 func structToMap(name string, data map[string]map[string]string, structElem reflect.Value) {
+	fmt.Println(name, data[name])
 	if name != "" && data[name] == nil {
 		data[name] = make(map[string]string)
 	}
