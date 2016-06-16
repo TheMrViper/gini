@@ -8,8 +8,11 @@ Any of struct in you config, its Section. Section is global. If you require sect
 
 ## Tags
 `ini` = tag for ignoring fields in structure
+
 `ini-name` = tag for set another name to fields
+
 `ini-default` = tag for set default value if value missing from config file
+
 
 
 
