@@ -122,10 +122,11 @@ func structToMap(name string, data map[string]map[string]string, structElem refl
 		valueField := structElem.Field(f)
 		typeField := typeStruct.Field(f)
 
-		fieldName := typeField.Tag.Get("ini-name")
-		if fieldName == "-" {
+		if typeField.Tag.Get("ini") == "-" {
 			continue
 		}
+
+		fieldName := typeField.Tag.Get("ini-name")
 		if fieldName == "" {
 			fieldName = typeField.Name
 		}
