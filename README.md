@@ -10,4 +10,4 @@ Any of struct in you config, its Section. Section is global. If you require sect
 	`ini-default` = tag for set default value if value missing from config file
 
 ### Example usage
-	You can look how i use this in my projects here: https://github.com/TheMrViper/gini-example
+	You can look how i use this in my projects here: [Gini-Example](https://github.com/TheMrViper/gini-example)
