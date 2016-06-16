@@ -2,7 +2,6 @@ package gini
 
 import (
 	"errors"
-	"fmt"
 	"reflect"
 	"strconv"
 )
@@ -110,7 +109,6 @@ func mapToStruct(name string, data map[string]map[string]string, structElem refl
 }
 
 func structToMap(name string, data map[string]map[string]string, structElem reflect.Value) {
-	fmt.Println(name, data[name])
 	if name != "" && data[name] == nil {
 		data[name] = make(map[string]string)
 	}
