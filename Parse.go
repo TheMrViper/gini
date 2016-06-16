@@ -65,6 +65,9 @@ func getFieldValue(data string) string {
 			isValue = true
 			continue
 		}
+		if isValue && (data[i] == ';' || data[i] == '#') {
+			break
+		}
 		if isValue && data[i] != ' ' && data[i] != '\t' {
 			result += string(data[i])
 		}

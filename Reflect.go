@@ -45,10 +45,11 @@ func mapToStruct(name string, data map[string]map[string]string, structElem refl
 		valueField := structElem.Field(f)
 		typeField := typeStruct.Field(f)
 
-		fieldName := typeField.Tag.Get("ini")
-		if fieldName == "-" {
+		if typeField.Tag.Get("ini") == "-" {
 			continue
 		}
+
+		fieldName := typeField.Tag.Get("ini-name")
 		if fieldName == "" {
 			fieldName = typeField.Name
 		}
@@ -64,7 +65,10 @@ func mapToStruct(name string, data map[string]map[string]string, structElem refl
 		}
 		fieldValue, ok := section[fieldName]
 		if !ok {
-			continue
+			fieldValue = typeField.Tag.Get("ini-default")
+			if len(fieldValue) <= 0 {
+				continue
+			}
 		}
 
 		switch valueField.Kind() {
@@ -118,14 +122,13 @@ func structToMap(name string, data map[string]map[string]string, structElem refl
 		valueField := structElem.Field(f)
 		typeField := typeStruct.Field(f)
 
-		fieldName := typeField.Tag.Get("ini")
+		fieldName := typeField.Tag.Get("ini-name")
 		if fieldName == "-" {
 			continue
 		}
 		if fieldName == "" {
 			fieldName = typeField.Name
 		}
-
 		switch valueField.Kind() {
 		case reflect.Struct:
 			structToMap(fieldName, data, valueField)
